@@ -1,0 +1,28 @@
+ {
+   "meta": [{
+     "code": "6666",
+     "success": true
+   }],
+   "data": [
+     {
+       "url": "javascript: void(0);",
+       "imgName": "beijing1"
+     },
+     {
+       "url": "javascript: void(0);",
+       "imgName": "beijing2"
+     },
+     {
+       "url": "javascript: void(0);",
+       "imgName": "beijing3"
+     },
+     {
+       "url": "javascript: void(0);",
+       "imgName": "beijing4"
+     },
+     {
+       "url": "javascript: void(0);",
+       "imgName": "beijing5"
+     }
+   ]
+ }

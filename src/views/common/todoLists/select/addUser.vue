@@ -1,539 +1,412 @@
 <template>
-<div class="classifyDetail">
-  <div class="search-box">
-    <search v-model="searchValue" position="absolute" auto-scroll-to-top top="0px" @on-cancel="onCancel" @on-submit="onSubmit" placeholder="请输入关键字" ref="search"></search>
-  </div>
-  <div class="screen-nav">
-    <div>
-      <tab :line-width="1" custom-bar-width="40px">
-        <tab-item selected @on-item-click="handleDefault">综合</tab-item>
-        <tab-item @on-item-click="handlePriceOrder">价格
-          <img class="icon-order" :src="priceOrder.img" ref="priceOrderImg" />		</tab-item>
-          <tab-item @on-item-click="handleScreen">筛选
-            <img class="icon-screen" :src="screenType.img" />		</tab-item>
-      </tab>
-    </div>
-    <div class="vux-1px-b" @click="changeType">
-      <img :src="model.img" />		</div>
-    </div>
-    <div v-show="showScreenList == true" class="screen-type-list">
-      <div>
-        <p>价格区间</p>
-        <div style="justify-content: space-around;">
-          <input type="number" name="" placeholder="最低价格" /> <i>—</i>
-          <input type="number" name="" placeholder="最高价格" />		</div>
+<div style="font-size: 1.4rem;background-color: #ffffff;height: 100vh;overflow: auto;margin-bottom: 43px;" class="reset-cell">
+  <!--头部固定-->
+  <header style="position: fixed;top: 0;left: 0;right: 0;z-index: 20;">
+    <x-header class="reset-header" :left-options="{backText: '返回',preventGoBack:true}" @click.native="returnFrom">部门管理</x-header>
+    <search v-model="searchValue" position="absolute" auto-scroll-to-top placeholder="输入部门名称、成员名称" top="46px" ref="search">
+      <aside>
+        <div class="animate" @touchmove.prevent>
         </div>
-        <div v-for="item in screenTypeList" :style="{height:item.height + 'px'}">
-          <p>{{item.type}}<span v-show="item.list.length > 3" @click="showAll(item)">全部</span></p>
-          <checker v-model="screenChecked" type="checkbox" default-item-class="list-item" selected-item-class="list-item-selected">
-            <checker-item v-for="list in item.list" :value="list.id" :key="list.id">
-              <div>{{list.name}}</div>
+      </aside>
+    </search>
+    <!--tabbar-->
+    <aside style="background-color: #ffffff;">
+      <!--已选标题栏-->
+      <div class="weui-cell vux-tap-active weui-cell_access vux-cell-no-border-intent">
+        <div class="vux-cell-bd vux-cell-primary ellipsy">
+          <span @click="returnMain">主目录</span><span v-for="(item,idx) in chooseOrgIdList" :key="idx"
+                                                      @click="returnPrew(item)"> >{{item.name}}</span>
+        </div>
+        <div class="weui-cell__ft vux-cell-arrow-transition" @click="showOrgIdAll = !showOrgIdAll" :class="showOrgIdAll?'vux-cell-arrow-up':'vux-cell-arrow-down'"></div>
+      </div>
+      <!--弹出已点击标题栏-->
+      <div class="slide" :class="showOrgIdAll?'animate':''" @touchmove.prevent>
+        <div style="background-color: #ffffff;padding: 0 15px;line-height: 42px;">
+          <span @click="returnMain">主目录</span><span v-for="(item,idx) in chooseOrgIdList" :key="idx"
+                                                       @click="returnPrew(item)"> > {{item.name}}</span>
+        </div>
+      </div>
+    </aside>
+  </header>
+  <section style="margin-top:130px;">
+    <aside style="background-color: #ffffff;" class="f14">
+      <ul>
+        <li class="no-select-li"><img src="../../../../assets/img/man.png" alt="">人员</li>
+          <!--tab选项-->
+          <template v-if="showUserIdTab">
+            <div style="margin: 10px">
+              <checker v-model="checkerUserItem" type="checkbox" default-item-class="check-item" selected-item-class="check-item-selected">
+                <checker-item v-for="(item,idx) in checkerUserIdTabList" :key="idx" :value="item">{{item.realName}}</checker-item>
+              </checker>
+            </div>
+          </template>
+        <li class="no-select-li"><img src="../../../../assets/img/config.png" alt="">下级组织</li>
+          <!--列表选项-->
+          <template v-if="showOrgIdList">
+            <div style="border-bottom: 1px solid #e5e5e5;">
+              <cell-box v-for="(item,idx) in checkerOrgIdList" :key="idx" class="sub-item" is-link @click.native="checkListItem(item)">{{item.name}}
+              </cell-box>
+            </div>
+          </template>
+      </ul>
+    </aside>
+
+    <footer class="foot-style">
+      <cell :title="'已选['+checkerUserItem.length+']'" style="width: 70px;max-width: 100px;display: inline-block;color: #ff7900" is-link :border-intent="false" :arrow-direction="showChooseAll ? 'down' : 'up'" @click.native="showChooseAll = !showChooseAll"></cell>
+      <span class="sure-btn"  @click="sureSendInfo">确定</span>
+    </footer>
+    <div class="slidefoot" @touchmove.prevent :class="showChooseAll?'animatefoot':''">
+      <div class="pot-bottom">
+        <p class="pot-tom-cancel"><img @click="showChooseAll = !showChooseAll" src="../../../../assets/img/check-cancel.png"
+                                         alt=""></p>
+          <checker v-model="checkercancel" type="checkbox" default-item-class="checks-item-selected" selected-item-class="">
+            <checker-item v-for="(item,idx) in checkerUserItem" :key="idx" :value="item.id" @on-item-click="cancelItem(idx)">{{item.realName}}
             </checker-item>
           </checker>
-        </div>
-        <p><span @click="confirmScreen">确定</span><span>|</span><span @click="handelReset">重置</span></p>
       </div>
-      <div v-if="model.type == 1 && showScreenList == false" class="good-list">
-        <ul>
-          <li v-for="item in goodsList">
-            <div class="good-img-box">
-              <img src="" />		</div>
-              <div class="good-info-box">
-                <div class="good-name">
-                  {{item.name}}
-                </div>
-                <span class="good-price">￥{{item.price}}</span>
-                <img :src="item.collect.img" @click="handleCollect(item)" />		</div>
-          </li>
-        </ul>
-      </div>
-      <ul v-if="model.type == 2 && showScreenList == false" class="list-type2">
-        <li v-for="item in goodsList">
-          <div class="goods-img">
-            <img src="" />		</div>
-            <div class="goods-info">
-              <p>{{item.name}}</p>
-              <p><strong>￥{{item.price}}</strong></p>
-            </div>
-            <img :src="item.collect.img" @click="handleCollect(item)" />		</li>
-      </ul>
     </div>
+  </section>
+</div>
 </template>
 
 <script>
 import {
+  mapActions
+} from 'vuex';
+import {
+  XHeader,
   Search,
-  Tab,
-  TabItem,
+  Cell,
+  CellBox,
   Checker,
   CheckerItem
 } from 'vux'
+
 export default {
-  name: 'classifyDetail',
+  name: "",
+  props: {
+    nextActivityId: {
+      type: [String, Number],
+      required: false
+    },
+    router: {
+      type: [String, Number],
+      required: false
+    },
+    businessKey: {
+      type: [String, Number],
+      required: false
+    }
+  },
   data() {
     return {
-      selected: 0, //tab选中项
-      searchValue: '', //搜索框内容
-      model: { //列表展示类型
-        type: 1
-      },
-      priceOrder: { //价格排序类型，asc升序，desc降序
-        type: 'default',
-      },
-      screenType: { //筛选状态
-        active: false,
-      },
-      showScreenList: false,
-      screenChecked: [], //筛选项选中的内容
-      screenTypeList: [{
-        id: 1,
-        height: '70',
-        type: '风格',
-        list: [{
-          id: 'T',
-          name: '现代简约',
-        }, {
-          id: '12',
-          name: '现代中式',
-        }, {
-          id: '123',
-          name: '现代中式中式',
-        }, {
-          id: '1234',
-          name: '现代中式',
-        }, {
-          id: '12345',
-          name: '现代中式',
-        }]
-      }, {
-        id: 2,
-        height: '70',
-        type: '控制方式',
-        list: [{
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '1',
-          name: '现代简约',
-        }, {
-          id: '12',
-          name: '现代中式',
-        }, {
-          id: '123',
-          name: '现代中式中式',
-        }, {
-          id: '1234',
-          name: '现代中式',
-        }, {
-          id: '12345',
-          name: '现代中式',
-        }]
+      searchValue: '', //搜索值
+      showOrgIdAll: false, //是否向下展开
+      showChooseAll: false, //已选项展开
+      showOrgIdList: true, //下级是否列表
+      showUserIdTab: false, //下级是否选项
+      checkerUserItem: [], //tab多选值
+      checkercancel: [], //cancel
+      checkerOrgIdList: [{
+        name: '组织机构'
       }],
-      goodsList: [{
-        name: '哎哎尚德机构垃圾了文件哪里看阿拉山口党纪国法拉斯柯达',
-        price: 2143,
-        collect: {
-          type: true,
-        }
-      }, {
-        name: '一台灯',
-        price: 2143,
-        collect: {
-          type: false,
-        }
-      }, {
-        name: '哎哎尚德机构垃圾了',
-        price: 2143,
-        collect: {
-          type: false,
-        }
-      }]
-    }
-  },
-  watch: {
-    screenChecked: function (value) {
-      console.log(value)
-    }
-  },
-  methods: {
-    setFocus() {
-      this.$refs.search.setFocus()
-    },
-    onSubmit() {
-      this.$refs.search.setBlur()
-      this.$vux.toast.show({
-        type: 'text',
-        position: 'top',
-        text: 'on submit'
-      })
-    },
-    onCancel() {
-      console.log('on cancel')
-    },
-    changeType() {
-      if (this.model.type == 1) {
-        this.model.type = 2;
-      } else {
-        this.model.type = 1;
-      }
-    },
-    handleCollect(item) {
-      if (item.collect.type) {
-        item.collect.type = false;
-      } else {
-        item.collect.type = true;
-      }
-    },
-    resetState() {
-      var self = this;
-
-      function priceOrderDefault() {
-        self.priceOrder.type = 'default';
-        self.$refs.priceOrderImg.style.transform = "rotate(0deg)";
-      }
-
-      function screenDefault() {
-        self.screenType.active = false;
-      }
-      if (this.selected == 0) {
-        priceOrderDefault();
-        screenDefault();
-      } else if (this.selected == 1) {
-        screenDefault();
-      } else if (this.selected == 2) {
-        priceOrderDefault();
-      }
-    },
-    handleDefault() {
-      this.selected = 0;
-      this.resetState();
-    },
-    handlePriceOrder() {
-      this.selected = 1;
-      this.resetState();
-      if (this.priceOrder.type == 'default') {
-        this.priceOrder.type = 'asc';
-      } else if (this.priceOrder.type == 'asc') {
-        this.priceOrder.type = 'desc';
-        this.$refs.priceOrderImg.style.transform = "rotate(180deg)";
-      } else if (this.priceOrder.type == 'desc') {
-        this.priceOrder.type = 'asc';
-        this.$refs.priceOrderImg.style.transform = "rotate(0deg)";
-      }
-    },
-    handleScreen() {
-      this.selected = 2;
-      this.resetState();
-      if (!this.screenType.acitve) {
-        this.screenType.active = true;
-        this.showScreenList = true; //显示筛选列表
-      }
-    },
-    showAll(item) {
-      if (item.height > 70) {
-        item.height = 70;
-      } else {
-        var num = parseInt(item.list.length / 3);
-        num = item.list.length > num * 3 ? num + 1 : num;
-        console.log(num)
-        var height = 30 + 45 * num;
-        item.height = height;
-      }
-    },
-    handelReset() { //筛选项重置事件
-      this.screenChecked.splice(0, this.screenChecked.length);
-    },
-    confirmScreen() { //筛选项确认事件
-      this.showScreenList = false; //关闭筛选列表
+      checkerUserIdTabList: undefined,
+      /*   checkerOrgIdList: [{
+          id: 1,
+          name: '组织机构'
+        }, ], */ //选项列表
+      /*  checkerUserIdTabList: [{
+         id: 1,
+         name: '陈伟'
+       }],  */ //tab选项列表
+      chooseOrgIdList: []
     }
   },
   components: {
+    XHeader,
     Search,
-    Tab,
-    TabItem,
+    Cell,
+    CellBox,
     Checker,
     CheckerItem
-  }
+  },
+  created: function () {
+    const nextActivityId = this.nextActivityId;
+    const router = this.router;
+    const businessKey = this.businessKey;
+    console.log("选人>>>>>>>>>>>>>>>>>", nextActivityId, router, businessKey);
+  },
+  mounted: function () {
+    //只执行一次
+    //console.log(2)
+    this.onInitData(this.nextActivityId, this.router, this.businessKey);
+  },
+  destroyed() {},
+  methods: {
+    ...mapActions([
+      'findTaskSelectOrgAndStaff',
+    ]),
+    onInitData() {
+      /*  let result = {};
+       this.$set(result, "name", '组织机构');
+
+       console.log(JSON.stringify(result));
+       /*  else {
+             item.checked = !item.checked
+           } */
+      /* this.checkerOrgIdList = result;  */
+    },
+
+    cancelItem(idx) {
+      let self = this
+      self.checkerUserItem.splice(idx, 1)
+    }, //弹框取消选择项
+
+    async queryTaskSelectOrgAndStaff(item) {
+      const sendInfo = {
+        headers: {
+          userId: this.storejs.get('LoginUserId'),
+        },
+        Jsondata: {
+          'businessKey': this.businessKey,
+          'nextActivityId': this.nextActivityId,
+          'decisionTransition': this.router,
+          'topOrgId': item.orgId,
+        }
+      };
+      this.$vux.loading.show({
+        text: '努力加载中'
+      });
+      const result = await this.findTaskSelectOrgAndStaff(sendInfo);
+      console.log("选人再次返回结果", result);
+      this.$vux.loading.hide();
+      this.checkerOrgIdList = [];
+      if (result.meta.success == true) {
+        const taskSelectOrgIdList = result.data.eventSelectOrgId;
+        const taskSelectUserIdList = result.data.eventSelectUserId;
+        /* taskRouterList.forEach(function (item, idx) {
+          item.key = idx
+          item.value = item.name
+          taskRouterList.splice(idx, 1, item)
+        }); */
+        if (taskSelectOrgIdList.length > 0) {
+          this.checkerOrgIdList = taskSelectOrgIdList;
+          this.showOrgIdList = true;
+        }
+        if (taskSelectUserIdList.length > 0) {
+          this.checkerUserIdTabList = taskSelectUserIdList;
+          this.showUserIdTab = true;
+        }
+
+      }
+
+    },
+    checkListItem(item) {
+      //console.log("点击", item);
+      this.chooseOrgIdList.push(item)
+      //再请求后台
+      this.queryTaskSelectOrgAndStaff(item);
+
+    }, //列表选中
+    returnMain() {
+      this.showOrgIdList = true
+      this.showUserIdTab = false
+      //          重新获取第一次的列表，并清空已选值
+      this.chooseOrgIdList = []
+      this.checkerUserItem = []
+    }, //返回主目录
+    returnPrew(item) {
+      let checker = item.name;
+      //再请求后台
+      this.queryTaskSelectOrgAndStaff(item);
+      //      是列表的就获取赋值
+      this.showOrgIdList = true
+      this.showUserIdTab = false
+      //console.log("列表选择", item);
+      let newOrgIdList = [];
+      for (let item of this.chooseOrgIdList) {
+        newOrgIdList.push(item);
+        if (item.name === checker) {
+          break;
+        }
+      }
+      this.chooseOrgIdList = newOrgIdList;
+      //console.log("列表选择ddd", this.chooseOrgIdList);
+      //this.chooseOrgIdList = item
+    }, //      是列表的就获取赋值
+    returnFrom() {
+      this.$emit('hideAddUser');
+    }, //隐藏选人机构页面
+    sureSendInfo() {
+       this.$emit('sureSendInfo',this.checkerUserItem);
+    },
+  },
 }
 </script>
 
-<style lang="less" scoped>
-@whiteColor: #FFFFFF;
-
-.search-box {
-  width: 100%;
-  height: 44.4px;
+<style scoped>
+.vux-header.reset-header {
+  background-color: #1B82D1 !important;
 }
 
-.screen-nav {
+.slide {
   overflow: hidden;
-
-  >div:first-of-type {
-    float: left;
-    width: calc(~'100% - 30px');
-  }
-
-  >div:last-of-type {
-    width: 30px;
-    height: 44px;
-    float: right;
-    background-color: #FFFFFF;
-
-    img {
-      width: 15px;
-      height: 15px;
-      margin-top: 14.5px;
-    }
-  }
-
-  .icon-order {
-    width: 6px;
-    height: 10px;
-  }
-
-  .icon-screen {
-    width: 14px;
-    height: 14px;
-    vertical-align: middle;
-    margin-top: -2px;
-  }
-}
-
-.screen-type-list {
-  width: 100%;
-  background-color: @whiteColor;
-  overflow: hidden;
-  margin-bottom: 38px;
-
-  >div {
-    height: 70px;
-    overflow: hidden;
-    font-size: 12px;
-    padding: 15px 15px 0px;
-    color: #646464;
-    transition: 0.5s;
-
-    >p {
-      margin-bottom: 10px;
-
-      span {
-        float: right;
-        color: #000000;
-      }
-    }
-
-    >div {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-
-      input {
-        height: 35px;
-        width: 38%;
-        border: 1px solid #E8EAF6;
-        text-align: center;
-      }
-
-      i {
-        color: #CCCCCC;
-      }
-
-      >div {
-        width: 33%;
-      }
-    }
-  }
-
-  >p {
-    width: 100%;
-    padding: 0px 15px;
-    font-size: 14px;
-    overflow: hidden;
-    position: fixed;
-    bottom: 50px;
-    left: 0px;
-    background-color: @whiteColor;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-
-    span {
-      float: right;
-      padding: 8px 10px;
-      display: block;
-    }
-  }
-}
-
-.list-item>div {
-  width: 80px;
-  height: 35px;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  background-color: #f7f8fd;
-  text-align: center;
-  line-height: 35px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
+  max-height: 0;
+  position: absolute;
+  top: 134px;
+  /* 143 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
   box-sizing: border-box;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1) -.1s;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
-.list-item-selected>div {
-  border: 1px solid #393A3E;
-  color: #393A3E;
+.animate {
+  overflow: visible;
+  /* max-height: 9999px; */
+  min-height: 9999px;
+  display: block;
+  transition-timing-function: cubic-bezier(0.5, 0, 1, 0);
+  transition-delay: 0s;
 }
 
-.good-list {
-  margin-top: 6px;
-  background-color: @whiteColor;
-
-  ul {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-
-    li {
-      width: 48%;
-
-      .good-img-box {
-        width: 100%;
-        height: 182px;
-        background-color: #eaeeef;
-
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      .good-info-box {
-        height: 78px;
-        padding: 10px 20px 0px;
-        position: relative;
-
-        .good-name {
-          font-size: 14px;
-          height: 43.2px;
-          -webkit-line-clamp: 2;
-          /*用来限制在一个块元素显示的文本的行数*/
-          display: -webkit-box;
-          /*必须结合的属性，将对象作为弹性伸缩盒子模型显示*/
-          -webkit-box-orient: vertical;
-          /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式*/
-          overflow: hidden;
-        }
-
-        span {
-          font-size: 16px;
-        }
-
-        img {
-          width: 16px;
-          height: 16px;
-          position: absolute;
-          right: 10px;
-          bottom: 14px;
-        }
-      }
-    }
-  }
+.no-select-li {
+  height: 42px;
+  background-color: #F7F7F7;
+  padding: 0 15px;
+  line-height: 49px;
+  border-bottom: 1px solid #e5e5e5;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.list-type2 {
-  padding: 14px 10px 0px;
+.no-select-li:after {
+  content: " ";
+  display: inline-block;
+  height: 40px;
+  width: 6px;
+  position: absolute;
+  top: 2px;
+  left: 0;
+  background: #C8C9C9;
+}
 
-  li {
-    width: 100%;
-    height: 80px;
-    border-radius: 6px;
-    overflow: hidden;
-    background-color: @whiteColor;
-    margin-bottom: 10px;
-    font-size: 13px;
+.no-select-li img {
+  padding-right: 10px;
+  margin-top: -5px;
+  display: inline-block;
+  width: 22px;
+}
 
-    .goods-img {
-      width: 80px;
-      height: 80px;
-      margin-right: 15px;
-      overflow: hidden;
-      background-color: #ebefef;
-      float: left;
+.check-item {
+  width: 100px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  margin-right: 6px;
+  position: relative;
+}
 
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
+.check-item-selected {
+  background: #ffffff url(../../../../assets/img/cancel.png) no-repeat right bottom;
+  background-size: 12%;
+  border-color: #3CBED7;
+}
 
-    .goods-info {
-      height: 80px;
-      float: left;
-      width: calc(~"100% - 135px");
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
+.checks-item-selected {
+  width: 100px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 3px;
+  margin-right: 6px;
+  position: relative;
+  background: #ffffff url('../../../../assets/img/cancel.png') no-repeat right bottom;
+  background-size: 12%;
+  border: 1px solid #3CBED7;
+}
 
-      >p:first-of-type {
-        line-height: 18px;
-        -webkit-line-clamp: 2;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
+.slidefoot {
+  overflow: hidden;
+  max-height: 100vh;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  bottom: 43px;
+  box-sizing: border-box;
+  display: none;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1) -.1s;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
 
-      >p:last-of-type {
-        float: right;
-        font-size: 12px;
-      }
-    }
+.animatefoot {
+  overflow: visible;
+  max-height: 100vh;
+  min-height: 100px;
+  display: block;
+  transition-timing-function: cubic-bezier(0.5, 0, 1, 0);
+  transition-delay: 0s;
+  z-index: 1000;
+}
 
-    >img {
-      width: 20px;
-      height: 20px;
-      margin-top: 30px;
-    }
-  }
+.pot-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  min-height: 6px;
+  padding: 10px;
+}
+
+.pot-tom-cancel {
+  /*  background-color: rgb(237,237,237); */
+  height: 20px;
+  position: relative;
+}
+
+.pot-tom-cancel img {
+  width: 20px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.foot-style {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  border-top: 1px solid #e5e5e5;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.sure-btn {
+  display: inline-block;
+  width: 60px;
+  height: 42px;
+  line-height: 42px;
+  background: #23ade5;
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+
+.ellipsy {
+  width: 130px !important;
+  margin-right: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

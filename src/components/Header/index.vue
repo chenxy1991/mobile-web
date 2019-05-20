@@ -1,6 +1,6 @@
 <template>
   <div id="Header"  :show="showHeader">
-    <x-header slot="header" style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color:rgb(76, 130, 193);"
+    <x-header slot="header" style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color:#1B82D1;"
               :left-options="{showBack: showBack, backText: backText}"
              >{{title}}
               <a slot="right"  @click="showMenus = true" :show="isShowAsideMenu"><icon class="el-icon-coral-search"></icon>搜索</a>

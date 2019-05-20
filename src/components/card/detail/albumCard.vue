@@ -9,7 +9,7 @@
     </li>
 </template>
 <script>
-    import {formatDate} from '../../../util/date';
+    import {formatDate} from '../../../utils/date';
 
     export default {
         name: 'v-album-card',

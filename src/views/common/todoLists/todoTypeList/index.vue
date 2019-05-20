@@ -1,93 +1,41 @@
 <template>
-<div class="tido-list-container" id="tido-list-container">
-  <div style="height: 44px" v-if="isSearching">
-    <search ref="todoSearch" v-model="searchText" position="absolute" auto-scroll-to-top @on-change="handleSearchChange"  @on-cancel="handleActions({}, 'todoSearchCancel')">
-    </search>
-  </div>
-  <div v-else>
-    <div class="Header">
-      <x-header slot="header" class="top">待办列表
-        <a slot="right" class="a-right"  @click="handleActions({}, 'search')">
-            <icon class="el-icon-coral-search"></icon>搜索</a>
+<div class="todoTypeList" id="todoTypeList" >
+  <div class="reset-cell" style="font-size: 1.4rem;background-color: #ffffff;height: 100vh;">
+    <header class="head">
+      <x-header class="reset-header" :left-options="{backText: ''}">{{type|filterType}}待办列表
       </x-header>
-    </div>
-  </div>
-  <scroller :on-refresh="handleDataRefresh">
-    <div class="items" :class="{pT05Rem: isSearching}" v-if="todoLists&&todoLists.length!==0">
-      <cell :title="item.flow_name" v-for="item in todoLists" :key="item.business_key" is-link @click.native="handleActions(item, 'todoType')">
-        <div class="badge-value">
-         <!--  <span class="vertical-middle"> {{item.create_time }}&nbsp;</span> -->
-          <badge :text="item.count"></badge>
-        </div>
+    </header>
+    <main>
+  <!--mescroll滚动区域的基本结构-->
+  <mescroll-vue id="mescroll" ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit">
+      <article>
+      <group :gutter="0">
+      <cell  :border-intent="false" :title="item.processName" is-link @click.native="handleTaskFlowTypeClick(item, 'todoType')" v-for="(item,idx) in todoTaskFlowTypeLists" :key="idx"   >
+         <span class="taskIndex" slot="icon" width="20" style="display:inline-block;margin-right:0.5rem;">{{idx+1}}</span>
+         <div>
+           <span style="color: red">{{item.tasknum}}</span>
+         </div>
+         <!-- <div slot="inline-desc">
+           <label class="f12 c999 ">{{item.taskId}}</label>
+					 <label class="f12 c999 ">{{item.createUserName}}</label>
+         </div> -->
       </cell>
-      <cell></cell>
+      </group>
+     <div v-if="todoTaskFlowTypeLists.length<5">
+          <load-more :show-loading="false" tip="我是有底线的" background-color="#fbf9fe"></load-more>
     </div>
-  </scroller>
-
-  <div v-if="isSearching">
-    <div v-if="!searchText&&todoLists&&todoLists.length===0" class="more-description">
-      请输入你的搜索条件~~~
-    </div>
-    <div v-if="searchText&&todoLists&&todoLists.length===0" class="more-description">
-      暂无符合条件的数据~~~
-    </div>
-  </div>
-  <div v-else>
-    <div v-if="todoLists===undefined">
-      <load-more tip="努力加载中"></load-more>
-    </div>
-    <div v-if="todoLists&&todoLists.length===0" class="more-description">
-      暂无符合条件的数据~~~
-    </div>
+    </article>
+   </mescroll-vue>
+   </main>
   </div>
 </div>
 </template>
 
 <script>
-const list = () => [{
-    business_key: "SJSZ2018081401261",
-    title: "请协助核实并提供修改用户摘要信息的联系方式",
-    flow_name: "需求1管理流程",
-    create_time: "2018-08-14",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082001502",
-    title: "CRM+ 用户号码076948372231状态正常，但是无法申报故障，故障预处理界面显示用户号码停机，麻烦核实，谢谢",
-    flow_name: "事件1管理流程",
-    create_time: "2018-08-20",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082200113",
-    title: "149、199无限量套餐无法受理副卡包优惠",
-    flow_name: "需求2管理流程",
-    create_time: "2018-08-21",
-    count: "1"
-  },
-  {
-    business_key: "SJSZ2018081401264",
-    title: "请协助核实并提供修改用户摘要信息的联系方式",
-    flow_name: "事件2管理流程",
-    create_time: "2018-08-14",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082001505",
-    title: "CRM+ 用户号码076948372231状态正常，但是无法申报故障，故障预处理界面显示用户号码停机，麻烦核实，谢谢",
-    flow_name: "事件3管理流程",
-    create_time: "2018-08-20",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082200116",
-    title: "149、199无限量套餐无法受理副卡包优惠",
-    flow_name: "事件4管理流程",
-    create_time: "2018-08-21",
-    count: "1"
-  }
-]
-
+import MescrollVue from 'mescroll.js/mescroll.vue'
+import {
+  mapActions
+} from 'vuex';
 import {
   Group,
   Cell,
@@ -97,191 +45,196 @@ import {
   LoadMore
 } from "vux";
 export default {
-  name: "daiban",
+  name: "todoTypeList",
   components: {
     Group,
     Cell,
     Badge,
     XHeader,
     Search,
-    LoadMore
+    LoadMore,
+    MescrollVue
   },
   data() {
     return {
-      currentUserId: parseInt(window.localStorage.getItem('SeawaterLoginUserId')),
-      todoLists: undefined,
-      isSearching: false,
-      searchText: '',
-      searchTimer: null,
-      currentItem: {},
+      mescroll: null, // mescroll实例对象
+			mescrollDown: {}, //下拉刷新的配置. (如果下拉刷新和上拉加载处理的逻辑是一样的,则mescrollDown可不用写了)
+      mescrollUp: { // 上拉加载的配置.
+        callback: this.upCallback, // 上拉回调,此处可简写; 相当于 callback: function (page, mescroll) { getListData(page); }
+        //以下是一些常用的配置,当然不写也可以的.
+        page: {
+          num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+          size: 10 //每页数据条数,默认10
+        },
+        htmlNodata: '<p class="upwarp-nodata">亲,没有更多数据了~</p>',
+        noMoreSize: 5, //如果列表已无数据,可设置列表总数大于5才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
+        toTop: {
+          //回到顶部按钮
+          src: "static/images/mescroll/mescroll-totop.png", //图片路径,默认null,支持网络图
+          offset: 1000 //列表滚动1000px才显示回到顶部按钮
+        },
+        empty: {
+          //列表第一页无任何数据时,显示的空提示布局; 需配置warpId才显示
+          warpId: "mescroll", //父布局的id (1.3.5版本支持传入dom元素)
+          icon: "static/images/mescroll/mescroll-empty.png", //图标,默认null,支持网络图
+          tip: "暂无相关数据~" //提示
+        }
+      },
+      todoTaskFlowTypeLists: [],//流程类型集合
+      type: '',//个人/组待办类型
     };
   },
-  async activated() {
-    const {
-      id
-    } = this.$route.params;
-    //const currentUserId = parseInt(window.localStorage.getItem('SeawaterLoginUserId'));
 
-    await this.initTodoListsByType(this.activeTab);
+  created: function () {
+    console.log(1)
+    const processType = this.$route.query.type;
+    this.type = processType;
   },
+  mounted: function () { //只执行一次
+    console.log(2)
 
-  deactivated() {
-    this.todoLists = undefined;
   },
-  created() {
-    /*  let vue = this.$store;
-     vue.commit("updateShowAsideMenu", true);
-     vue.commit("updateShowBack", true);
-     vue.commit("updateTitle", "待办列表");
-     vue.commit("updateBackText", "返回");
-     vue.commit("updatShowHeader", true); */
+  destroyed: function () {
+    console.log(3)
+    this.todoTaskFlowTypeLists = [];
   },
-  mounted() {
-    //const {id} = this.$route.params;
-    const ele = document.getElementById("loading");
-    ele.style.display = "none";
+  filters: {
+    filterType: function (value) {
+      if (value == 'group') {
+        value = '未领取';
+      } else if (value == 'person') {
+        value = '已领取';
+      }
+      return value;
+    },
   },
   methods: {
-    async initTodoListsByType(type) {
-      this.todoLists = list();
-      window.sessionStorage.setItem('todoLists',JSON.stringify(list()));
-      return this.todoLists;
+    ...mapActions([
+      'queryTodoTaskFlowTypeLists',
+    ]),
+    // mescroll组件初始化的回调,可获取到mescroll对象 (如果this.mescroll并没有使用到,可不用写mescrollInit)
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll
     },
-    handleSearchChange() {
-      if (this.searchText) {
-        window.clearTimeout(this.searchTimer);
-        this.searchTimer = setTimeout(async () => {
-         /*  this.details = await this.getDetailsByBillId({
-             id: this.group.bill_id,
-             name: this.searchText
-           }); */
-           this.todoLists=[];
-           var searDate=JSON.parse(window.sessionStorage.getItem('todoLists'));
-      //逻辑-->根据input的value值筛选goodsList中的数据
-      for (var i = 0; i < searDate.length; i++) {
-        //for循环数据中的每一项（根据name值）
-         console.log(this.searchText);
-        console.log(searDate[i].flow_name);
-        if (searDate[i].flow_name.search(this.searchText) != -1) {
-          //判断输入框中的值是否可以匹配到数据，如果匹配成功
-          this.todoLists.push(searDate[i]);
-          //向空数组中添加数据
+    // 上拉回调 page = {num:1, size:10}; num:当前页 ,默认从1开始; size:每页数据条数,默认10
+    upCallback(page, mescroll) {
+      const processType = this.$route.query.type;
+      this.runQueryTodoTaskFlowTypeListsApi(processType,page,mescroll);
+    },
+    async runQueryTodoTaskFlowTypeListsApi(processType,page,mescroll) {
+      let result = {};
+      let userId=JSON.parse(this.storejs.get('LoginUserId'));
+      try {
+        const sendInfo = {
+          headers: {
+            userId:userId,
+          },
+          Jsondata: {
+            'type': processType,
+            "pageSize": page.num, // 页码
+            "pageNo": page.size, // 每页长度
+          }
+        };
+        this.$vux.loading.show({text: '努力加载中'});
+        result = await this.queryTodoTaskFlowTypeLists(sendInfo);
+         this.$vux.loading.hide();
+      } catch (error) {
+        console.error(error);
+        alert(error);
+        console.error(error);
+        this.showToast(false,'warn','请求工单流程类型异常，原因:' + error+",请稍后再试!");
+      }
+      console.log("待办类型初始化", result);
+      if (result.meta.success == true) {
+        let map=result.data.map;
+        let arr = map.taskTypeFlowList;
+         // 如果是第一页需手动制空列表
+        if (page.num === 1){
+           this.todoTaskFlowTypeLists = []
         }
-      }
-        }, 500);
+        // 把请求到的数据添加到列表
+        this.todoTaskFlowTypeLists =this.todoTaskFlowTypeLists.concat(arr)
+        // 数据渲染成功后,隐藏下拉刷新的状态
+        this.$nextTick(() => {
+          mescroll.endSuccess(arr.length)
+        })
+      }else{
+        let failDesc=result.meta.msg;
+        let failCaused=result.data.errorMsg;
+        this.showToast(false,'warn','页面加载异常，原因:' +failDesc+","+ failCaused);
+        //跳转到404页面
       }
     },
-    async handleDataRefresh(done) {
-      const {
-        id
-      } = this.$route.params;
-      //获取Lists
-      /*   const groupId = unCompile(id);
-        this.group = (await this.getGroupById({id: groupId}))[0] || {}; */
-      done();
-    },
-    handleActions(item, actionType) {
-      switch (actionType) {
-        case 'todoType':
-          this.$router.push({
+    handleTaskFlowTypeClick(item, actionType){
+       this.$router.push({
             name: actionType,
-            params: {
-              businessKey: item.flow_name,
+            query: {
+              processName: item.processName,
+              processKey: item.processDefinitionKey,
+              processType: this.type,
             }
           });
-          break;
-        case 'return':
-          this.$router.push('/');
-          break;
-        case 'search':
-          this.isSearching = true;
-          this.searchText = '';
-          this.$nextTick(() => {
-            this.$refs.todoSearch.setFocus();
-            this.todoLists = [];
-          });
-          break;
-        case 'todoSearchCancel':
-          this.isSearching = false;
-          this.$nextTick(() => {
-            this.initTodoListsByType(this.activeTab);
-          });
-          break;
-        default:
-          break;
-      }
     },
   },
 };
 </script>
+<style lang="less" scoped>
+.head{
+  position: fixed;
+  left: 0;
+  height: 4.6rem;
+  width: 100%;
+  background-color:#ffffff;;
+  z-index: 100;
+}
 
-<style lang="less">
-.tido-list-container {
-  min-height: 100%;
+.head {
+  top: 0;
+}
 
-  * {
-    font-size: 14px;
-  }
-
-  .Header {
-    .vux-header-title {
-      font-size: 16px;
-    }
-
-    .vux-header-back {
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .a-right {
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .menu {
-      margin-right: 70px;
-    }
-
-    .menu div {
-      color: #000;
-    }
-
-    .menu:before {
-      right: -70px;
-    }
-
-    .top {
-      margin-bottom: 0px;
+main{
+      position: fixed;
+      top: 4.6rem;
+      bottom: 0rem;
       width: 100%;
-      position: relative;
-      left: 0;
-      top: 0;
-      z-index: 100;
-      background-color: rgb(76, 130, 193);
-    }
+      overflow: scroll;
+      background-color:#FFF;
   }
+</style>
+<style lang="less" scoped>
+/*以fixed的方式固定mescroll的高度*/
+.mescroll {
+  position: fixed;
+  top: 4.6rem;
+  bottom: 0;
+  height: auto;
+}
+ /* main {
+      padding: 4.6rem 0 0 0;
+      height: 100vh;
+      width:100wh;
+      overflow-y: scroll;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+  } */
+</style>
+<style lang="less" scoped>
+.taskIndex {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    font-size: 1.4rem;
+    text-align: center;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+    color: rgb(28, 130, 212);
+    background-color: rgb(205, 228, 255);
+}
 
-  .items {
-    margin-top: 44px;
-  }
-
-  .pT05Rem {
+ /*  .pT05Rem {
     padding-top: 0.5rem;
     margin-top: 0 !important;
-  }
+  } */
 
-  .badge-value {
-    display: inline-block !important;
-  }
-
-  .vertical-middle {
-    vertical-align: middle;
-  }
-
-  .more-description {
-    font-size: 16px;
-    text-align: center;
-    margin-top: 100px;
-  }
-}
 </style>

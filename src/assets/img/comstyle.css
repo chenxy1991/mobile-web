@@ -1,0 +1,32 @@
+.reset-cell .weui-cell_access .weui-cell__ft:after {
+  content: " ";
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-width: 2px 2px 0 0;
+  border-color: #3cbcd5 !important;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  position: absolute;
+  top: 50%;
+  margin-top: -4px;
+  right: 2px;
+}
+
+.reset-cell .foot-style .weui-cell_access .weui-cell__ft:after {
+  content: " ";
+  border-color: #ff8500 !important;
+  margin-top: -14px;
+}
+
+.reset-cell .weui-cell_access .weui-cell__ft {
+  width: 30px;
+  height: 20px;
+}
+
+.reset-cell .foot-style .weui-cell_access .weui-cell__ft {
+  width: 50px;
+  height: 0px;
+}
+

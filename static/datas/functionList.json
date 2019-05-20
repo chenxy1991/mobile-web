@@ -7,25 +7,29 @@
   {
       "title": "待办",
       "imgName": "home_gonggao",
-      "badgeValue": 3
+      "badgeValue": 3,
+      "url": "todoLists"
     }, {
       "title": "待阅",
-      "imgName": "home_gonggao"
+      "imgName": "home_gonggao",
+      "url": ""
+
     }, {
-      "title": "维护作业",
-      "imgName": "home_gonggao"
+      "title": "待办未领取",
+      "imgName": "home_gonggao",
+      "url": ""
     }, {
-      "title": "流程查询",
-      "imgName": "home_gonggao"
-    }, {
-      "title": "公告",
-      "imgName": "home_gonggao"
+      "title": "待办已领取",
+      "imgName": "home_gonggao",
+      "url": ""
     }, {
       "title": "功能",
-      "imgName": "home_gonggao"
+      "imgName": "home_gonggao",
+      "url": ""
     }, {
       "title": "自定义",
-      "imgName": "home_gonggao"
+      "imgName": "home_gonggao",
+      "url": ""
     }
 
  ]

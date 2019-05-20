@@ -1,5 +1,16 @@
 import {mapActions} from 'vuex';
-import {Search, Tab, TabItem, Flexbox, FlexboxItem, Rater, Group, PopupPicker, LoadMore} from 'vux';
+import {
+  Search,
+  Tab,
+  TabItem,
+  Flexbox,
+  FlexboxItem,
+  Rater,
+  Group,
+  PopupPicker,
+  LoadMore,
+ XHeader,
+} from 'vux';
 import {SmallImageBasePath} from '../../../constants/index';
 
 const shareTypes = [{
@@ -16,7 +27,7 @@ const shareTypes = [{
 export default {
     data () {
         return {
-            currentUserId: parseInt(window.localStorage.getItem('SeawaterLoginUserId')),
+            currentUserId: parseInt(this.storejs.get('SeawaterLoginUserId')),
             activeTab: window.sessionStorage.getItem('SeawaterEncyActiveTab') || 'tj',
             types: [],
             activeTypes: {
@@ -45,7 +56,8 @@ export default {
         Rater,
         Group,
         PopupPicker,
-        LoadMore
+        LoadMore,
+        XHeader,
     },
 
     created() {

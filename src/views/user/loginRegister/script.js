@@ -14,7 +14,7 @@ export default {
     return {
       index: 0,
       height: '',
-      color:'',
+      color: '',
     };
   },
 
@@ -28,18 +28,21 @@ export default {
     Register,
     Divider
   },
-
-  activated() {
-
+  created: function () {
+    console.log(1)
   },
-   mounted() {
-   this.getWH()
-   },
+  mounted: function () { //只执行一次
+    console.log(2)
+    this.getWH()
+  },
+ destroyed() {
+   console.log(4)
+   document.body.style.background = '';
+ },
   methods: {
-     getWH() {
-       alert(window.innerHeight + 'px');
+    getWH() {
       this.height = window.innerHeight + 'px';
-      document.body.style.background = 'rgb(76, 130, 193)';
+      document.body.style.background = '#1B82D1';
     },
     handleTabItemClick(index) {
       if (index == 1) {

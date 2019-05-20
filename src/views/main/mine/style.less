@@ -13,10 +13,10 @@
   .content {
     width: 100%;
     box-sizing: border-box;
-    padding: 0 1rem;
+    /* padding: 0 0rem; */
     .wrap {
       width: 100%;
-      padding: 1rem;
+      padding: 0.5rem;
       box-sizing: border-box;
       background-color: #fff;
       box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
@@ -26,14 +26,14 @@
         display: flex;
         flex-direction: row;
         .avatar {
-          width: 11rem;
-          height: 11rem;
+          width: 8rem;
+          height: 8.5rem;
           overflow: hidden;
-          border-radius: 8px;
-          margin-right: 1.8rem;
+          border-radius: 7px;
+          margin-right: 1rem;
           img {
-            width: 11rem;
-            height: 11rem;
+            width: 8rem;
+            height: 8rem;
           }
         }
         .others {
@@ -41,39 +41,12 @@
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          .role-city {
-            height: 2.4rem;
-            line-height: 2.4rem;
-            transform: translateY(-0.5rem);
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            .role {
-              color: #8a8a8f;
-            }
-            .city {
-              color: #8a8a8f;
-            }
-          }
-          .about {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            div {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-            .f18 {
-              color: #3fc6ff;
-            }
-            .f11 {
-              color: #9b9b9b;
-            }
-            .point {
-              .f18 {
-                color: #f5a523;
-              }
+          i {
+            img {
+              position: relative;
+              width: 18px;
+              height: 18px;
+              vertical-align: middle;
             }
           }
         }
@@ -106,7 +79,7 @@
             flex: 1;
             text-align: right;
             .el-icon-coral-enter {
-              font-size: 1.2rem;
+              font-size: 1.6rem;
               color: #c1c4d6;
             }
           }

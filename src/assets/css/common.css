@@ -5,15 +5,58 @@
 }
 
 html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* 解决IOS默认滑动很卡的情况 */
+  -webkit-overflow-scrolling: touch;
   font-size: 10px !important;
   color: #000;
   background-color: #f3f3f3;
   font-family: '微软雅黑', Helvetica, STHeiTi, Arial, sans-serif;
 }
 
+/* 禁止缩放表单 */
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input {
+  resize: none;
+  border: none;
+  -webkit-appearance: none;
+  -webkit-user-select:text !important
+}
+
+/* 设置HTML5元素为块 */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
 @media only screen and (min-width: 414px) {
   html {
     font-size: 12px !important;
+  }
+
+  .input span {
+    width: 100px;
+    display: inline-block;
+    font-family: 'Microsoft YaHei';
+  }
+
+  .y-scroll {
+    max-height: 600px;
+  }
+
+  .otherbox {
+    height: 150px;
   }
 }
 
@@ -21,35 +64,117 @@ html {
   html {
     font-size: 10px !important;
   }
+
+  .input span {
+    width: 80px;
+    display: inline-block;
+  }
+
+  .y-scroll {
+    max-height: 500px;
+  }
+
+  .otherbox {
+    height: 130px;
+  }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+  font-size: 100%;
+  font-family: 'Microsoft YaHei';
+}
+
+strong {
   font-weight: normal;
 }
 
-ul, ol {
-  list-style: none;
+ul,
+li {
+  list-style-type: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0
+}
+
+textarea {
+  resize: none;
+  /*禁用了文本的拖拉，尤其在谷歌下*/
+}
+
+p {
+  word-wrap: break-word;
+  /* 不够的单词自动换行 而不会被截掉 */
 }
 
 /*清除列表默认样式*/
-i, em {
+em,
+i {
   font-style: normal;
 }
 
 /*清除斜体默认样式*/
 a {
   text-decoration: none;
+  font-family: 'Microsoft YaHei', Tahoma, Arial, sans-serif;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
 }
 
 a:active {
   outline: 0;
 }
 
-.clearfix:before, .clearfix:after {
+/*单行溢出*/
+.one-txt-cut {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*多行溢出 手机端使用*/
+.txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; */
+  -webkit-box-orient: vertical;
+}
+
+
+.clearfix:before,
+.clearfix:after {
   content: "";
-  display: inline-table;
+  display: block;
+  visibility: hidden;
+  height: 0;
+  clear: both;
+}
+
+/* 移动端点击a链接出现蓝色背景问题解决 */
+a:link,
+a:active,
+a:visited,
+a:hover {
+ /*  background: none; */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .clearfix:after {
@@ -57,7 +182,7 @@ a:active {
 }
 
 .clearfix {
-  *zoom: 1;
+  zoom: 1;
 }
 
 .clear {
@@ -88,7 +213,7 @@ a:active {
 
 img {
   display: inline-block;
-  border: 0 none;
+  border: none;
   vertical-align: middle;
 }
 
@@ -125,7 +250,78 @@ img {
   color: #1c1c1c !important;
 }
 
+.db {
+  display: block !important;
+}
+
+.dn {
+  display: none;
+}
+
 .bg-white {
   background: #ffffff !important;
 }
 
+.vux-header.reset-header {
+  /* background-color: rgb(76, 130, 193) !important; */
+  background-color: rgb(27, 130, 209) !important;
+
+}
+
+.overflow {
+  overflow: hidden;
+}
+
+.w50 {
+  width: 50%;
+}
+
+.w25 {
+  width: 25%;
+}
+
+.w20 {
+  width: 20%;
+}
+
+.w33 {
+  width: 33.333333%;
+}
+/**文本自动换行*/
+.auto-linefeed {
+  word-break: break-all;
+  word-wrap: break-word;
+
+}
+.reset-cell /deep/ .vux-header .vux-header-left .left-arrow:before {
+  position: absolute;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1px solid #ffffff;
+  border-width: 1.5px 0 0 1.5px;
+  transform: rotate(315deg);
+  top: 8px;
+  left: 7px;
+}
+/*<div class="page-content">这个是可以滑动的内容区域</div>*/
+.page-content {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+/*<div class="scroll-page">这个是按钮固定在页面上</div>*/
+.scroll-page {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background: #f8105c;
+  color: white;
+  text-align: center;
+  line-height: 50px;
+  font-size: 18px;
+  z-index: 99;
+}

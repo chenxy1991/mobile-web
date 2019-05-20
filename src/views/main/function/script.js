@@ -14,7 +14,7 @@ export default {
   },
 
   async activated() {
-    const currentUserId = parseInt(window.localStorage.getItem('SeawaterLoginUserId'));
+    const currentUserId = parseInt(this.storejs.get('SeawaterLoginUserId'));
     if (currentUserId) {
       this.currentUser = (await this.getUserById({
         id: currentUserId
