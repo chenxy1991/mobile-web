@@ -1,0 +1,2 @@
+export const LOADING = 'LOADING';
+export const GROUPS_IN_CUR_PROVINCE = 'GROUPS_IN_CUR_PROVINCE';

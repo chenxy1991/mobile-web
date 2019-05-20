@@ -1,0 +1,17 @@
+.form-contant {
+  max-width: 500px;
+  margin: 10% auto;
+}
+
+.weui-grid:after {
+  border-bottom: none !important;
+}
+
+.weui-grid {
+  padding: 10px !important;
+}
+
+.weui-grid__icon {
+  width: 42px !important;
+  height: 42px !important;
+}
