@@ -15,7 +15,7 @@ onRefresh：下来加载更多方法，目前已屏蔽，如需要加设属性en
         <slot name="pull-refresh">
            <span class="down-tip"> 下拉更新</span>
            <span class="up-tip">松开更新</span>
-           <span class="refresh-tip">更新中...</span>
+           <span class="refresh-tip">更新中</span>
         </slot>
       </header>
       <slot></slot>
@@ -31,18 +31,19 @@ onRefresh：下来加载更多方法，目前已屏蔽，如需要加设属性en
 <style>
   .yo-scroll {
     font-size: 14px;
-    position: relative;
-    top: 0;
+    position: absolute;
+    top: 290px;
     right: 0;
     bottom: 0;
     left: 0;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     background-color: #ffffff;
+    z-index: 100;
   }
   .yo-scroll .inner {
-    position: relative;
-    top: -3.1rem;
+    position: absolute;
+    top: -2rem;
     width: 100%;
     transition-duration: 300ms;
   }
@@ -81,7 +82,7 @@ onRefresh：下来加载更多方法，目前已屏蔽，如需要加设属性en
   }
 </style>
 <script>
-  import {LoadMore} from 'vux'
+ import {LoadMore} from 'vux'
 export default {
   props: {
     offset: {
@@ -126,9 +127,11 @@ export default {
       this.touching = true
     },
     touchMove(e) {
+
       if (!this.enableRefresh || this.$el.scrollTop > 0 || !this.touching) {
         return
       }
+
       let diff = e.targetTouches[0].pageY - this.startY - this.startScroll
       if (diff > 0) e.preventDefault()
       this.top = Math.pow(diff, 0.8) + (this.state === 2 ? this.offset : 0)

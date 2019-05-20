@@ -1,6 +1,6 @@
 import {mapGetters, mapActions} from 'vuex';
 import {ButtonTab, ButtonTabItem, Alert, LoadMore} from 'vux';
-import {compile} from '../../../util/data';
+import {compile} from '../../../utils/data';
 import {AvatarBasePath} from '../../../constants/index';
 
 export default {
@@ -8,7 +8,7 @@ export default {
         return {
             billFirstWordColor: ['#ee735c', '#d4e5e0', '#f5a623', '#64c708', '#84daef'],
             active: window.sessionStorage.getItem('SeawaterGroupTabActive') || 'group',
-            curProvince: [window.localStorage.getItem('SeawaterCurProvince') || 'sh'],
+            curProvince: [this.storejs.get('SeawaterCurProvince') || 'sh'],
             groups: undefined,
             bills: undefined,
             currentItem: {},

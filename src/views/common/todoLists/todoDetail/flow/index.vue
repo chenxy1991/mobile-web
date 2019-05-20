@@ -1,0 +1,254 @@
+<template>
+<div class="reset-cell" style="font-size: 1.6rem;overflow: auto;" >
+    <header>
+
+    </header>
+    <article style="padding-bottom: 54px;padding-top:70px;">
+
+    </article>
+    <footer>
+
+    </footer>
+</div>
+</template>
+<script>
+
+function phoneBackButtonListener() {
+    if (isHeaderShow) {
+       // 你们自己处理
+      this.$router.go(-1);//返回上一层
+       return true;
+    } else {
+       return false; // 表示关闭你们整个页面，这个由我们这边处理
+    }
+}
+</script>
+<script>
+import {
+  isEmpty,getUrlKey
+} from '../../../../utils/common.js'
+import {
+  Tab,
+  TabItem,
+  Divider,
+  TransferDom,
+  XHeader,
+  Group,
+  ViewBox,
+} from "vux";
+import {
+  mapActions,mapState,mapGetters
+} from 'vuex';
+import IndexDetails from "./detail/index";
+import FlowProcess from "./flow/FlowProcess";
+import AttachmentList from "./file/AttachmentList";
+export default {
+  name: "",
+  directives: {
+    TransferDom
+  },
+  components: {
+    Tab,
+    TabItem,
+    Divider,
+    IndexDetails,
+    FlowProcess,
+    AttachmentList,
+    XHeader,
+    Group,
+    ViewBox,
+  },
+  data() {
+    return {
+      activeTab: this.storejs.get("GroupTabActive"),
+      title: "",//标题
+      taskInfoId: "",//任务ID
+      processKey: "",//流程key
+      isHeaderShow:true,//是否显示头部
+      allowAccessTo:true,//是否运行第三方访问
+    };
+  },
+  created: function () {
+    //console.log(1)
+    const {
+      businessKey,
+      taskInfoId,
+      processKey,
+      currentTaskName,
+      processType,
+      applyOrgId,
+    } = this.$route.query;
+    this.title = currentTaskName;
+    this.businessKey = businessKey;
+    this.processKey = processKey;
+    this.taskInfoId = taskInfoId;
+    if(processType=="group"){
+      this.showSignIn=true;
+    }
+    let url= window.location.href;
+    let token=getUrlKey("token");
+    if(!isEmpty(token)){
+      this.allowAccessTo=false;
+      this.isHeaderShow=false;
+      alert(JSON.stringify(token));
+      this.moaTokenVerifyLogin(token);
+    }
+    this.activeTab='JB';
+    console.log(">>>>>>>>>>>hhh" + businessKey);
+  },
+  mounted: function () {
+     // 将phoneBackButtonListener方法绑定到window下面，提供给外部调用
+     window['phoneBackButtonListener'] = () => {
+        this.phoneBackButtonListener()
+     }
+    //只执行一次
+    //console.log(2)
+  },
+  destroyed: function () {
+    console.log(4);
+
+    // this.taskTypeDetailList = undefined;
+  },
+  /**获取vuex值的两种方式 */
+  computed:{
+      ...mapState({
+        formDetail:state=>state.formDetail,
+    }),
+    ...mapGetters([
+      'getFormDetail',
+    ]),
+  },
+  methods: {
+    ...mapActions([
+      'thirdPartyTokenVerificationLogin',
+    ]),
+    phoneBackButtonListener() {
+        if (this.isHeaderShow) {
+          // 你们自己处理
+          this.$router.go(-1);//返回上一层
+          return true;
+        } else {
+          return false; // 表示关闭你们整个页面，这个由我们这边处理
+        }
+    },//第三方操作返回事件
+  async moaTokenVerifyLogin(token) {
+     alert("进来了moaTokenVerifyLogin");
+      let result = {};
+      try {
+        /*  timeout:100, */
+      const sendInfo = {
+        headers: {
+          token:token
+        },
+        Jsondata: {
+        }
+      }
+      this.$vux.loading.show({ text: '努力加载中'  });
+      result = await this.thirdPartyTokenVerificationLogin(sendInfo);
+      this.$vux.loading.hide();
+       } catch (error) {
+        console.error(error);
+        this.showToast(false, 'warn', '第三方验证登陆失败，原因:' + error);
+      }
+      console.log("thirdPartyTokenVerificationLogin>>>>>>>>结果集:", result);
+      if (result.meta.success == true) {
+        this.allowAccessTo=true;//可以允许进入第三方
+        console.log(">>>>>登录信息" + JSON.stringify(result.data.user));
+        let userInfo= result.data.user;
+        window.localStorage.setItem('token',token);
+        window.localStorage.setItem('Authorization',result.data.jwt);
+        window.localStorage.setItem('UserInfo', JSON.stringify(userInfo));
+        window.localStorage.setItem('LoginUserId',userInfo.userId);
+      }else{
+        let failDesc=result.meta.msg;
+        let failCaused=result.data.errorMsg;
+        this.showToast(false,'warn','第三方验证登陆异常，原因:' +failDesc+","+ failCaused);
+        //跳转到404页面
+      }
+    },//第三方验证登陆
+     handleTabItemClick(name) {
+      this.activeTab = name;
+      document.body.scrollTo(0, 0);
+      window.localStorage.setItem("GroupTabActive", name);
+    },//tab转换
+
+  }
+};
+//在全局中定义该函数
+
+</script>
+<style lang="less" scoped>
+.pT44px{
+  margin-top: 4.4rem !important;
+}
+.pT9Rem{
+  margin-top: 9rem !important;
+}
+.pB55 {
+  width: 100%;
+  padding-bottom: 5.5rem;
+}
+
+.pT44Rem {
+    margin-top: 4.4rem !important;
+  }
+.nav {
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  height: 0;
+  .vux-tab {
+    height: 38px;
+  }
+
+  .tab-container {
+    .text {
+      color: #9b9b9b;
+    }
+
+    .tab-item-container {
+      line-height: 38px;
+    }
+
+    .vux-tab-selected {
+      .text {
+        color: #28b1ea;
+      }
+    }
+  }
+}
+
+.top {
+  margin-bottom: 0px;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  background-color: #1B82D1;
+}
+
+.tab {
+  margin-top: 46px;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.item {
+  position: relative;
+  left: 0;
+  top: 92px;
+  width: 100%;
+  z-index: 0;
+}
+
+
+
+.tab-swiper {
+  background-color: #fff;
+  height: 100px;
+}
+</style>

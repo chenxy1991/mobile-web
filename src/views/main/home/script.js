@@ -113,7 +113,7 @@ import YScroll from '../../../components/scroll/YScroll';
 import {
   compile,
   formatUrlParams
-} from '../../../util/data';
+} from '../../../utils/data';
 import {
   AvatarBasePath,
   SmallImageBasePath
@@ -167,7 +167,7 @@ export default {
       showScreenList: false,
       screenChecked: [], //筛选项选中的内容
       screenTypeList: list(),
-      currentUserId: parseInt(window.localStorage.getItem('LoginUserId')),
+      currentUserId: parseInt(this.storejs.get('LoginUserId')),
       list: urlList,
       billFirstWordColor: ['#ee735c', '#d4e5e0', '#f5a623', '#64c708', '#84daef'],
       groups: undefined,
@@ -175,10 +175,6 @@ export default {
       encyList: undefined,
       isSearching: false,
       searchText: '',
-      pageY: 0,
-      disY: 0,
-      navTop: 0,
-      startNavTop: 0,
       htmlFontSize: 14,
       tabIconList: [],
     };
@@ -239,7 +235,7 @@ export default {
   },
 
   async activated() {
-    this.currentUserId = parseInt(window.localStorage.getItem('LoginUserId')) || 0;
+    this.currentUserId = parseInt(this.storejs.get('LoginUserId')) || 0;
 
 
     /*  const response = await this.getGroupList({
@@ -442,8 +438,8 @@ export default {
           this.isSearching = false;
           this.search.active = true;
           this.$nextTick(() => {
-          /*   this.initNavStyle();
-            this.initDetailsByType(this.activeTab); */
+            /*   this.initNavStyle();
+              this.initDetailsByType(this.activeTab); */
           });
           break;
       }

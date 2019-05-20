@@ -11,7 +11,7 @@
     </div>
 </template>
 <script>
-    import {countHandle} from '../../../util/data';
+    import {countHandle} from '../../../utils/data';
 
     export default {
         name: 'v-play-list-card',

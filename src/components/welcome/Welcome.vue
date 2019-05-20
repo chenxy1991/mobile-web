@@ -4,7 +4,7 @@
     <img src="./logo.png">
      <div class="close" @click="closeGuide">正在加载 {{count_down}}s</div>
     <div id="loading" style="position: absolute; top: 200px; left: 50%; transform: translate(-50%, -50%)">
-      <img id="loadingImg" src="./oval.svg" alt="loading" style="widows: 50px;background-color: rgb(76, 130, 193);">
+      <img id="loadingImg" src="./oval.svg" alt="loading" style="widows: 50px;background-color: #1B82D1;">
       </div>
       <!--<p style="text-align:center;">
       <span style="vertical-align:middle;display:inline-block;font-size:14px;"> {{ $t('loading') }} &nbsp;&nbsp;</span>
@@ -75,7 +75,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 6;
-  background-color: rgb(76, 130, 193);
+  background-color: #1B82D1;
   animation: welcome 0.5s;
   transition: 0.3s;
   -webkit-transition: 0.3s;

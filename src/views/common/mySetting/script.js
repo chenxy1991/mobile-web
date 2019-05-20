@@ -1,7 +1,7 @@
 import {mapActions} from 'vuex';
 import {Group, GroupTitle, XButton, XInput, PopupPicker, XTextarea} from 'vux';
 import {AvatarBasePath, TaobaoQrBasePath, WechatQrBasePath} from '../../../constants/index';
-import {isEmpty, toFormData} from '../../../util/common';
+import {isEmpty, toFormData} from '../../../utils/common';
 import RegExp from "../../../constants/regExp";
 
 const ImageBasePath = {
@@ -13,7 +13,7 @@ const ImageBasePath = {
 export default {
     data() {
         return {
-            currentUserId: parseInt(window.localStorage.getItem('SeawaterLoginUserId')),
+            currentUserId: parseInt(this.storejs.get('SeawaterLoginUserId')),
             user: {},
             isSeller: false,
             avatarImgPath: '',
@@ -135,7 +135,7 @@ export default {
             if (result.status === 'ok') {
                 this[`${which}ImgPath`] = `${ImageBasePath[which]}?id=${this.currentUserId}&r=${Math.random()}`;
                 this.$vux.toast.show({
-                    type: 'success',                    
+                    type: 'success',
                     text: `上传成功`
                 });
             }
@@ -162,7 +162,7 @@ export default {
 
             if (result.status === 'ok') {
                 this.$vux.toast.show({
-                    type: 'success',                    
+                    type: 'success',
                     text: `更新成功`
                 });
             }

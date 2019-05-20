@@ -1,224 +1,400 @@
 <template>
-<div class="tido-list-container" id="tido-list-container">
-  <div style="height: 44px" v-if="isSearching">
-    <search ref="todoSearch" v-model="searchText" position="absolute" auto-scroll-to-top @on-change="handleSearchChange" @on-cancel="handleActions({}, 'todoSearchCancel')">
-    </search>
-  </div>
-  <div v-else>
-    <div class="Header">
-      <x-header slot="header" class="top">{{title}}
-        <a slot="right" class="a-right"  @click="handleActions({}, 'search')">
-            <icon class="el-icon-coral-search"></icon>搜索</a>
+<div class="todoType"  id="todoType">
+  <div class="reset-cell"  style="font-size: 1.4rem;background-color: #ffffff;height: 100vh;">
+    <header class="head">
+      <x-header class="reset-header" :left-options="{backText: ''}">{{title}}
       </x-header>
+       <search   @result-click="resultClick"
+              placeholder="输入流程名称、流程类型、标题"
+              @on-change="getResult"
+              :results="results"
+              v-model="keyWord"
+              position="absolute"
+              auto-scroll-to-top top="46px"
+              @on-focus="onFocus"
+              @on-cancel="onCancel"
+              @on-submit="onSubmit" ref="search">
+      </search>
+    </header>
+  <!--mescroll滚动区域的基本结构-->
+  <main>
+  <mescroll-vue ref="mescroll" id="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit">
+    <article>
+    <!--内容...-->
+   <div class="types" v-if="taskLinkTypeList.length>0">
+      <div class="type f12" :class="{'type-active':type.isActive}" v-for="(type,index) in taskLinkTypeList" @click="handleTaskLinkTypeChange(type)" :key="index">
+        {{type.taskLinkName}}
+      </div>
     </div>
-  </div>
-  <scroller :on-refresh="handleDataRefresh">
-    <div class="items" :class="{pT05Rem: isSearching}">
-      <div class="block-content " v-if="todoType&&todoType.length!==0" v-for="item in todoType" :key="item.id" @click="handleActions(item, 'todoDetail')">
+    <div class="block">
+      <div class="block-content items" @click="handleActions(item, 'todoDetail')" v-for="(item,index) in dataList" :key="index">
         <div class="content-main  group-content-main">
-          <div class="info">
+          <div class="info" :class="{'grey-bg': index % 2 == 0}">
             <div class="info-item">
-              <span class="f14 info-span-item-title">工单编号 2018081610019882 因系统区域域中心</span>
+              <span class="f14 info-span-item-title">{{item.worksheetTitle}}</span>
             </div>
             <div class="info-item">
               <span>
-                  <span class="f12 c999">需求时间管理流程</span>
+                  <span class="f12 c999">{{item.processName}}</span>
               </span>
               <span>
-                  <span class="f12 c999">2018-02-04</span>
+                  <span class="f12 c999">{{item.taskName}}</span>
+              </span>
+              <span>
+                  <span class="f12 c999">{{item.createTime|formatDate}}</span>
               </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-if="isSearching">
-      <div v-if="!searchText&&todoType&&todoType.length===0" class="more-description">
-        请输入你的搜索条件~~~
-      </div>
-      <div v-if="searchText&&todoType&&todoType.length===0" class="more-description">
-        暂无符合条件的数据~~~
-      </div>
+     <div v-if="dataList.length<5">
+          <load-more :show-loading="false" tip="我是有底线的" background-color="#fbf9fe"></load-more>
     </div>
-    <div v-else>
-      <div v-if="todoType&&todoType===undefined">
-        <load-more tip="努力加载中"></load-more>
-      </div>
-      <div v-if="todoType&&todoType.length===0" class="more-description">
-        暂无符合条件的数据~~~
-      </div>
-    </div>
-  </scroller>
-
+    </article>
+  </mescroll-vue>
+  </main>
+  </div>
 </div>
 </template>
 
 <script>
-const list = () => [{
-    business_key: "SJSZ2018081401261",
-    title: "请协助核实并提供修改用户摘要信息的联系方式",
-    flow_name: "需求1管理流程",
-    create_time: "2018-08-14",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082001502",
-    title: "CRM+ 用户号码076948372231状态正常，但是无法申报故障，故障预处理界面显示用户号码停机，麻烦核实，谢谢",
-    flow_name: "事件1管理流程",
-    create_time: "2018-08-20",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082200113",
-    title: "149、199无限量套餐无法受理副卡包优惠",
-    flow_name: "需求2管理流程",
-    create_time: "2018-08-21",
-    count: "1"
-  },
-  {
-    business_key: "SJSZ2018081401264",
-    title: "请协助核实并提供修改用户摘要信息的联系方式",
-    flow_name: "事件2管理流程",
-    create_time: "2018-08-14",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082001505",
-    title: "CRM+ 用户号码076948372231状态正常，但是无法申报故障，故障预处理界面显示用户号码停机，麻烦核实，谢谢",
-    flow_name: "事件3管理流程",
-    create_time: "2018-08-20",
-    count: "1"
-  },
-  {
-    business_key: "SJDG2018082200116",
-    title: "149、199无限量套餐无法受理副卡包优惠",
-    flow_name: "事件4管理流程",
-    create_time: "2018-08-21",
-    count: "1"
-  }
-]
-
+import FilterBar from '../../../../components/vueFilterBar/FilterBar'
+// 引入mescroll的vue组件
+import MescrollVue from 'mescroll.js/mescroll.vue'
+import {isEmpty} from '../../../../utils/common'
+import {
+  mapActions
+} from 'vuex';
+import {
+  formatDate
+} from '../../../../utils/date.js';
 import {
   Group,
   Cell,
-  Badge,
   XHeader,
   Search,
-  LoadMore
 } from "vux";
 export default {
   name: "todoType",
   components: {
     Group,
     Cell,
-    Badge,
     XHeader,
+    FilterBar,
     Search,
-    LoadMore
+    MescrollVue // 注册mescroll组件
   },
   data() {
     return {
-      currentUserId: parseInt(window.localStorage.getItem('SeawaterLoginUserId')),
-      todoType: undefined,
-      isSearching: false,
-      searchText: '',
-      searchTimer: null,
-      currentItem: {},
-      title:window.sessionStorage.getItem('title'),
-    };
-  },
-  async activated() {
-    //const currentUserId = parseInt(window.localStorage.getItem('SeawaterLoginUserId'));
-    var id = this.$route.params.businessKey;
-   await this.initTodoTypeData();
-    if(id!=undefined){
-    window.sessionStorage.setItem('title', businessKey);
-    this.title=window.sessionStorage.getItem('title');
+      taskLinkTypeList: [{
+        isActive: true,
+        taskLinkCode: "all",
+        taskLinkName: "全部"
+      }], //任务环节类型
+      taskLinkCode:undefined, //流程任务环节编码
+      title: '',//标题
+      keyWord:'',//搜索关键子
+      mescroll: null, // mescroll实例对象
+      mescrollDown: {}, //下拉刷新的配置. (如果下拉刷新和上拉加载处理的逻辑是一样的,则mescrollDown可不用写了)
+      mescrollUp: { // 上拉加载的配置.
+        callback: this.upCallback, // 上拉回调,此处可简写; 相当于 callback: function (page, mescroll) { getListData(page); }
+        //以下是一些常用的配置,当然不写也可以的.
+        page: {
+          num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+          size: 10 //每页数据条数,默认10
+        },
+        htmlNodata: '<p class="upwarp-nodata">亲,没有更多数据了~</p>',
+        noMoreSize: 5, //如果列表已无数据,可设置列表总数大于5才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
+        toTop: {
+          //回到顶部按钮
+          src: "../../../../../static/images/mescroll/mescroll-totop.png", //图片路径,默认null,支持网络图
+          offset: 1000 //列表滚动1000px才显示回到顶部按钮
+        },
+        empty: {
+          //列表第一页无任何数据时,显示的空提示布局; 需配置warpId才显示
+          warpId: "mescroll", //父布局的id (1.3.5版本支持传入dom元素)
+          icon: "../../../../../static/images/mescroll/mescroll-empty.png", //图标,默认null,支持网络图
+          tip: "暂无相关数据~" //提示
+        }
+      },
+      dataList: [] // 列表数据
     }
-
   },
-
-  deactivated() {
-    this.todoType = undefined;
+  beforeRouteEnter(to, from, next) { // 如果没有配置回到顶部按钮或isBounce,则beforeRouteEnter不用写
+    next(vm => {
+      // 找到当前mescroll的ref,调用子组件mescroll-vue的beforeRouteEnter方法
+      vm.$refs.mescroll && vm.$refs.mescroll.beforeRouteEnter() // 进入路由时,滚动到原来的列表位置,恢复回到顶部按钮和isBounce的配置
+    })
   },
-  created() {
-    /*  let vue = this.$store;
-     vue.commit("updateShowAsideMenu", true);
-     vue.commit("updateShowBack", true);
-     vue.commit("updateTitle", "待办列表");
-     vue.commit("updateBackText", "返回");
-     vue.commit("updatShowHeader", true); */
+  beforeRouteLeave(to, from, next) { // 如果没有配置回到顶部按钮或isBounce,则beforeRouteLeave不用写
+    // 找到当前mescroll的ref,调用子组件mescroll-vue的beforeRouteLeave方法
+    this.$refs.mescroll && this.$refs.mescroll.beforeRouteLeave() // 退出路由时,记录列表滚动的位置,隐藏回到顶部按钮和isBounce的配置
+    next()
   },
-  mounted() {
-    //const {id} = this.$route.params;
-    const ele = document.getElementById("loading");
-    ele.style.display = "none";
+  created: function () {
+    console.log(1)
+    const {processKey,processType,processName} = this.$route.query;
+    this.title = processName;
+  },
+  mounted: function () { //只执行一次
+    console.log(2)
+    this.initPageData();
+  },
+  destroyed() {},
+  filters: {
+    formatDate(time) {
+      if (time != null) {
+        var date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm:ss');
+      }
+    }
   },
   methods: {
-    async initTodoTypeData() {
-      this.todoType = list();
-      window.localStorage.setItem('todoType', JSON.stringify(list()));
-      return this.todoType;
+    ...mapActions([
+      'queryToDoTaskCodeByType',
+      'queryToDoTaskDetailByType',
+      'queryToDoDetailLikeKeyWord',
+    ]),
+    initPageData(){
+      this.runQueryToDoTaskCodeByTypeApi();
     },
-    handleSearchChange() {
-      if (this.searchText) {
-        window.clearTimeout(this.searchTimer);
-        this.searchTimer = setTimeout(async () => {
-          /*  this.details = await this.getDetailsByBillId({
-              id: this.group.bill_id,
-              name: this.searchText
-            }); */
-          this.todoType = [];
-          var searDate = JSON.parse(window.localStorage.getItem('todoType'));
-          //逻辑-->根据input的value值筛选goodsList中的数据
-          for (var i = 0; i < searDate.length; i++) {
-            //for循环数据中的每一项（根据name值）
-            console.log(this.searchText);
-            console.log(searDate[i].flow_name);
-            if (searDate[i].flow_name.search(this.searchText) != -1) {
-              //判断输入框中的值是否可以匹配到数据，如果匹配成功
-              this.todoType.push(searDate[i]);
-              //向空数组中添加数据
-            }
+    async runQueryToDoTaskCodeByTypeApi() {
+      const {
+        processKey,
+        processType,
+        processName
+      } = this.$route.query;
+      let result = {};
+      let userId=JSON.parse(this.storejs.get('LoginUserId'));
+      try {
+        const sendInfo = {
+          headers: {
+            userId: userId,
+          },
+          Jsondata: {
+            "processKey": processKey,
+            "toDoType": processType,
           }
-        }, 500);
+        };
+        this.$vux.loading.show({	text: '努力加载中'});
+        result = await this.queryToDoTaskCodeByType(sendInfo);
+        this.$vux.loading.hide();
+      } catch (error) {
+        console.error(error);
+        this.showToast(false, 'warn', '初始化流程编码失败，原因:' + error);
+      }
+      console.log("结果集queryToDoTaskCodeByType>>>>>>>>", result);
+      if (result.meta.success == true) {
+        let resMap = result.data.map;
+        let toDoTaskCode = resMap.toDoTaskCode;
+         for (let taskLinkType of toDoTaskCode) {
+          this.$set(taskLinkType, 'isActive', false);
+        }
+        this.taskLinkTypeList = this.taskLinkTypeList.concat(toDoTaskCode);
+        console.log("taskLinkTypeList>>>>>>>>",toDoTaskCode);
+      }else{
+        let failDesc=result.meta.msg;
+        let failCaused=result.data.errorMsg;
+        this.showToast(false,'warn','请求流程环节类型异常，原因:' +failDesc+","+ failCaused);
+      }
+    },//初始化环节名称类型
+    handleTaskLinkTypeChange(data) {
+      this.taskLinkTypeList.forEach(function (obj) {
+        obj.isActive = false;
+      });
+      data.isActive = !data.isActive;
+      console.log("点击", data);
+      if (data.taskLinkCode === 'all') {
+        //刷新当前页面加载全部
+        this.taskLinkCode = undefined;
+      } else {
+        this.taskLinkCode = data.taskLinkCode;
+      }
+      let page = {
+        "num": 1,
+        "size": 10,
+        "time": null
+      }
+      this.upCallback(page, this.mescroll);
+    },//点击流程环节类型触发事件
+    //搜索框相关
+    setFocus() {
+      this.$refs.search.setFocus()
+    },
+    onSubmit() {
+      this.$refs.search.setBlur()
+      let page = {
+        "num": 1,
+        "size": 10,
+        "time": null
+      }
+      console.log("mmm",this.keyWord);
+      this.upCallback(page, this.mescroll);
+    },
+    onFocus() {
+      console.log('on focus')
+    },
+    onCancel() {
+      console.log('on cancel');
+       let page = {
+        "num": 1,
+        "size": 10,
+        "time": null
+      }
+      this.keyWord="";
+      console.log("mmm",this.keyWord);
+      this.upCallback(page, this.mescroll);
+    },
+     // mescroll组件初始化的回调,可获取到mescroll对象 (如果this.mescroll并没有使用到,可不用写mescrollInit)
+    mescrollInit (mescroll) {
+      this.mescroll = mescroll
+    },
+    // 上拉回调 page = {num:1, size:10}; num:当前页 ,默认从1开始; size:每页数据条数,默认10
+    upCallback (page, mescroll) {
+      // 联网请求
+       // 联网请求
+      if(isEmpty(this.keyWord)){
+       //获取流程编码
+      this.getAsyncTodoDetail(page, mescroll);
+      }else{
+      this.getAsyncTodoDetailLikeKeyWord(page, mescroll);
       }
     },
-    async handleDataRefresh(done) {
-      const {
-        id
-      } = this.$route.params;
-      //获取Lists
-      /*   const groupId = unCompile(id);
-        this.group = (await this.getGroupById({id: groupId}))[0] || {}; */
-      done();
+    async getInitData() {
+      //获取流程编码
+      this.getAsyncTodoTaskCode();
     },
+    async getAsyncTodoDetail(page, mescroll) {
+      let result = {};
+      const {processKey,processType,processName} = this.$route.query;
+      let userId=JSON.parse(this.storejs.get('LoginUserId'));
+      try {
+        const sendInfo = {
+          headers: {
+            userId: userId,
+          },
+          Jsondata: {
+            "taskCode": this.taskLinkCode,//环节任务编码
+            "processKey": processKey,
+            "toDoType": processType,
+            "pageSize": page.num, // 页码
+            "pageNo": page.size, // 每页长度
+          }
+        };
+        this.$vux.loading.show({	text: '努力加载中'});
+        result = await this.queryToDoTaskDetailByType(sendInfo);
+        this.$vux.loading.hide();
+      } catch (error) {
+        // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+        mescroll.endErr()
+        console.error(error);
+        this.showToast(false, 'warn', '请求工单详情失败，原因:' + error);
+      }
+      console.log(">>>>>>>>queryToDoTaskDetailByType结果集：", result);
+      if (result.meta.success == true) {
+        // 请求的列表数据
+        let map=result.data.map;
+        let arr =map.toDoDetail;
+        //let arr =[];
+        // 如果是第一页需手动制空列表
+        if (page.num === 1){
+           this.dataList = []
+        }
+        // 把请求到的数据添加到列表
+        this.dataList = this.dataList.concat(arr)
+        // 数据渲染成功后,隐藏下拉刷新的状态
+        this.$nextTick(() => {
+          mescroll.endSuccess(arr.length)
+        })
+      }else{
+        let failDesc=result.meta.msg;
+        let failCaused=result.data.errorMsg;
+        this.showToast(false,'warn','下拉刷新列表失败，原因:' +failDesc+","+ failCaused);
+      }
+    },
+    async getAsyncTodoDetailLikeKeyWord(page, mescroll) {
+      let result = {};
+      const {processKey,processType,processName} = this.$route.query;
+      let userId=JSON.parse(this.storejs.get('LoginUserId'));
+      try {
+        const sendInfo = {
+          headers: {
+            userId: userId,
+          },
+          Jsondata: {
+            "taskCode": this.taskLinkCode,//环节任务编码
+            "processKey": processKey,
+            "toDoType":processType,
+            "keyWord":this.keyWord,
+            "pageSize": page.num, // 页码
+            "pageNo": page.size, // 每页长度
+          }
+        };
+        this.$vux.loading.show({	text: '努力加载中'});
+        result = await this.queryToDoDetailLikeKeyWord(sendInfo);
+        this.$vux.loading.hide();
+
+      } catch (error) {
+        // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+        mescroll.endErr()
+        console.error(error);
+        this.showToast(false, 'warn', '搜索工单详情失败，原因:' + error);
+      }
+      //const resJsonData = JSON.stringify(result);
+      console.log(">>>>>>>>queryToDoDetailLikeKeyWord结果集:", result);
+      if (result.meta.success == true) {
+        // 请求的列表数据
+        let arr = result.data.map.toDoDetail;
+        //let arr =[];
+        // 如果是第一页需手动制空列表
+        if (page.num === 1){
+          this.dataList = []
+        }
+        // 把请求到的数据添加到列表
+        this.dataList = this.dataList.concat(arr)
+        // 数据渲染成功后,隐藏下拉刷新的状态
+        this.$nextTick(() => {
+          mescroll.endSuccess(arr.length)
+        })
+      }else{
+        let failDesc=result.meta.msg;
+        let failCaused=result.data.errorMsg;
+        this.showToast(false,'warn','下拉刷新列表失败，原因:' +failDesc+","+ failCaused);
+      }
+    },
+
     handleActions(item, actionType) {
-      alert(item + "1111" + actionType);
+      console.log(item);
       switch (actionType) {
         case 'todoDetail':
           this.$router.push({
             name: actionType,
-            params: {
-              businessKey: this.businessKey,
+            query: {
+              businessKey: item.businessKey,
+              taskInfoId: item.taskInfoId,
+              processKey: item.processDefinitionKey,
+              currentTaskName: item.currentTaskName,
+              processType: this.$route.query.processType,
+              applyOrgId: item.acceptGroupId,
             }
           });
           break;
         case 'return':
-          this.$router.push('/');
+          this.$router.go(-1);
           break;
         case 'search':
           this.isSearching = true;
           this.searchText = '';
           this.$nextTick(() => {
             this.$refs.todoSearch.setFocus();
-            this.todoType = [];
+            this.taskTypeDetailList = [];
           });
           break;
         case 'todoSearchCancel':
           this.isSearching = false;
           this.$nextTick(() => {
-            this.initTodoTypeDate(this.activeTab);
+            this.getInitData();
           });
           break;
         default:
@@ -228,127 +404,153 @@ export default {
   },
 };
 </script>
+<style lang="less" scoped>
+.head{
+  position: fixed;
+  left: 0;
+  height: 9rem;
+  width: 100%;
+  background-color:#ffffff;;
+  z-index: 100;
+}
 
-<style lang="less">
-.tido-list-container {
-  min-height: 100%;
+.head {
+  top: 0;
+}
 
-  * {
-    font-size: 14px;
+main{
+      position: fixed;
+      top: 9rem;
+      bottom: 0rem;
+      width: 100%;
+      overflow: scroll;
+      background-color:#FFF;
+  }
+   /*以fixed的方式固定mescroll的高度*/
+   .mescroll {
+    position: fixed;
+    top:9rem;
+    bottom: 0;
+    height: auto;
+  }
+</style>
+<style lang="less" scoped>
+
+
+ /* main {
+      padding: 9rem 0 0 0;
+      height: 100vh;
+      overflow-y: scroll;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+  } */
+ /*  .box{
+  //overflow-y: scroll;
+	touch-action: pan-y;
+	-webkit-overflow-scrolling: touch;
+	} */
+</style>
+<style lang="less" scoped>
+  .grey-bg {
+    background-color: #eee;
+  }
+.types {
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .type {
+    width: 10.5rem;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    margin: 0.3rem 0.3rem 0;
+    background-color: #fff;
+    color: #28b1ea;
+    text-align: center;
+    border: 0.1rem solid #39b7f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 6px;
   }
 
-  .block-content {
-    width: 100%;
-    padding: 0 0.05rem 0.07rem 0.05rem;
-    box-sizing: border-box;
-
-    .content-main {
-      background: #fff;
-      box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .group-content-main {
-      height: 0.9rem;
-
-      .avatar {
-        padding: 0 0.05rem;
-
-        img {
-          width: 0.82rem;
-          height: 0.86rem;
-          vertical-align: middle;
-          border-radius: 4px;
-        }
+  .type-active {
+    background-color: #28b1ea;
+    color: #fff;
+  }
+}
+    .block-content {
+      width: 100%;
+      padding: 0 0.05rem 0.07rem 0.05rem;
+      box-sizing: border-box;
+      .content-main {
+        background: #fff;
+        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
       }
 
-      .info {
-        flex: 1;
-        height: 100%;
-        box-sizing: border-box;
-        padding: 0.1rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
+      .group-content-main {
+        height: 9rem;
 
-        .info-item {
+        .avatar {
+          padding: 0 0.5rem;
+
+          img {
+            width: 8.2rem;
+            height: 8.6rem;
+            vertical-align: middle;
+            border-radius: 4px;
+          }
+        }
+
+        .info {
+          flex: 1;
+          height: 100%;
+          box-sizing: border-box;
+          padding: 1rem;
           display: flex;
-          flex-direction: row;
-          justify-content: space-between;
+          flex-direction: column;
+          justify-content: space-around;
+          border-bottom: 0.5px solid #ccc;
 
-          .info-span-item-title {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            overflow: hidden;
+          .info-item {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            .info-span-item-title {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 2;
+              overflow: hidden;
+            }
           }
         }
       }
     }
+
+
+
+  /**背景图片这里背景容器要写成相对位置*/
+  .aaa {
+    background: url('../../../../assets/home/icon-screen.png');
+    width: 100px;
+    height: 100px;
+    position: relative;
   }
 
-  .Header {
-    .vux-header-title {
-      font-size: 16px;
-    }
-
-    .vux-header-back {
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .a-right {
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .menu {
-      margin-right: 70px;
-    }
-
-    .menu div {
-      color: #000;
-    }
-
-    .menu:before {
-      right: -70px;
-    }
-
-    .top {
-      margin-bottom: 0px;
-      width: 100%;
-      position: relative;
-      left: 0;
-      top: 0;
-      z-index: 100;
-      background-color: rgb(76, 130, 193);
-    }
+  /**挡在前边的图，这里要是用相对位置我标红了*/
+  .bbb {
+    background: url('../../../../assets/home/icon-screen.png');
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 30px;
+    left: 325px;
   }
 
-  .items {
-    margin-top: 44px;
-  }
-
-  .pT05Rem {
-    padding-top: 0.5rem;
-    margin-top: 0 !important;
-  }
-
-  .badge-value {
-    display: inline-block !important;
-  }
-
-  .vertical-middle {
-    vertical-align: middle;
-  }
-
-  .more-description {
-    font-size: 16px;
-    text-align: center;
-    margin-top: 100px;
-  }
-}
 </style>

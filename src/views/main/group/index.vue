@@ -1,79 +1,77 @@
 <template>
-    <div class="group-tab-container">
-        <scroller :on-refresh="handleDataRefresh">
-            <div class="button-tab">
-                <button-tab :height="35">
-                    <button-tab-item :selected="active==='group'" @on-item-click="handleTabItemChange('group')">
-                        同省热团
-                    </button-tab-item>
-                    <button-tab-item :selected="active==='bill'" @on-item-click="handleTabItemChange('bill')">
-                        最新出单
-                    </button-tab-item>
-                </button-tab>
-            </div>
-            <load-more tip="努力加载中" v-if="!groups||!bills"></load-more>
-            <div class="block" v-if="active==='group'">
-                <div class="block-content"
-                     v-for="group in (groupsInCurProvince.length ? groupsInCurProvince : groups)"
-                     :key="group.id" @click="handleActions(group, 'groupDetail')"
-                >
-                    <div class="content-main group-content-main">
-                        <div class="avatar">
-                            <img :src="group.userAvatar" alt="同省商家头像">
-                        </div>
-                        <div class="info">
-                            <div class="info-item">
-                                <span v-if="group.status===1" class="group-status f11">热团中</span>
-                                <span class="group-status group-status-disabled f11" v-else>已结束</span>
-                                <span v-if="group.status===1">
-                                    <icon class="el-icon-coral-naozhong f12"></icon>
-                                    <span class="f12 c999">{{group.end_date}}结束</span>
-                                </span>
-                            </div>
-                            <div class="info-item">
-                                <span class="group-name f15">{{group.name}}</span>
-                            </div>
-                            <div class="info-item">
-                                <span>
-                                    <icon class="el-icon-coral-people f12 c999"></icon>
-                                    <span class="f12 c999">{{group.contacts}}</span>
-                                </span>
-                                <span>
-                                    <icon class="el-icon-coral-coordinates f12 c999"></icon>
-                                    <span class="f12 c999">{{group.city}}</span>
-                                </span>
-                                <span>
-                                    <icon class="el-icon-coral-caiwu-xianxing f12"></icon>
-                                    <span class="f12 c999">{{group.sum}}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="block" v-else>
-                <div class="block-content">
-                    <div class="content-main bill-content-main" v-for="item in bills" :key="item.id"
-                         @click="handleActions(item, 'billDetail')">
-                        <div class="bill-first-word" :style="{'background-color': billFirstWordColor[item.id%5]}">
-                            <span class="f13">{{item.name[0]}}</span>
-                        </div>
-                        <div class="info">
-                            <span class="bill-name f15">{{item.name}}</span>
-                            <span class="upload-time f13">{{item.contacts}}上传于{{item.upload_date.split('T')[0]}}</span>
-                        </div>
-                        <div class="open-btn" v-if="item.status===1" @click.stop="handleActions(item, 'groupAdd')">
-                            <span class="f13">我要开团</span>
-                        </div>
-                        <div class="open-btn open-btn-disabled" @click.stop="handleActions(item, 'tip')" v-else>
-                            <span class="f13">我要开团</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </scroller>
-        <alert v-model="showTip" title="亲，" :content="`${currentItem.name}已结束，逛逛其他的吧~~~`"></alert>
-    </div>
+  <div>
+    <x-header :left-options="{backText: ''}">积分管理</x-header>
+    <div class="showIntegral">你当前的积分为222分</div>
+    <group class="cellView">
+        <cell
+          :title="('积分兑换')"
+          is-link
+          :border-intent="false"
+          :arrow-direction="showContent004 ? 'up' : 'down'"
+          @click.native="showContent004 = !showContent004"></cell>
+      <p class="slide" :class="showContent004?'animate':''">blablabla...<br/>blablabla...<br/>blablabla...<br/>blablabla...</p>
+    </group>
+    <group class="cellView">
+        <cell
+          :title="('积分兑换')"
+          is-link
+          :border-intent="false"
+          :arrow-direction="showContent003 ? 'up' : 'down'"
+          @click.native="showContent003 = !showContent003"></cell>
+      <p class="slide" :class="showContent003?'animate':''">blablabla...<br/>blablabla...<br/>blablabla...<br/>blablabla...</p>
+    </group>
+  </div>
 </template>
-<script src="./script.js"></script>
-<style lang="less" src="./style.less"></style>
+
+<script>
+import { XHeader, Actionsheet, TransferDom, ButtonTab, ButtonTabItem, Cell, CellBox, CellFormPreview, Group, Badge } from 'vux'
+
+export default {
+    name: "index",
+        data() {
+            return {
+                show4: false,
+                showContent004: false,
+                showContent003: false
+            };
+        },
+  components: {
+    XHeader,
+    Actionsheet,
+    ButtonTab,
+    ButtonTabItem,
+    Group,
+    Cell,
+    CellFormPreview,
+    CellBox,
+    Badge
+  },
+  methods: {
+  }
+}
+</script>
+
+<style scoped>
+    .showIntegral{
+        height: 44px;
+        width: 100%;
+        text-align: center;
+        line-height: 44px;
+        color: #269e62;
+    }
+    .cellView{
+        background-color: #f5f5f5;
+        height: 31px;
+    }
+    .slide {
+  padding: 0 20px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1) -.1s;
+}
+.animate {
+  max-height: 9999px;
+  transition-timing-function: cubic-bezier(0.5, 0, 1, 0);
+  transition-delay: 0s;
+}
+</style>
