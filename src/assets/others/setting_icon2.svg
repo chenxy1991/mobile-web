@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="我的" transform="translate(-35.000000, -371.000000)">
+            <g id="list1-copy" transform="translate(30.000000, 371.000000)">
+                <g id="Icon" transform="translate(5.000000, 0.000000)">
+                    <circle id="Base" fill="#FA9D4C" cx="12" cy="12" r="12"></circle>
+                    <g id="cart-white" transform="translate(5.000000, 7.000000)" fill-rule="nonzero" fill="#FFFFFF">
+                        <g id="Group" transform="translate(3.000000, 8.500000)">
+                            <circle id="Oval" cx="6.5" cy="1.25" r="1.25"></circle>
+                            <circle id="Oval" cx="1.5" cy="1.25" r="1.25"></circle>
+                        </g>
+                        <path d="M10.5,8 L4.7295,8 C3.8985,8 3.1765,7.4085 3.0135,6.5935 L1.795,0.5 L0.5,0.5 C0.362,0.5 0.25,0.388 0.25,0.25 C0.25,0.112 0.362,0 0.5,0 L2,0 C2.119,0 2.2215,0.084 2.245,0.201 L3.504,6.495 C3.6205,7.0775 4.136,7.5 4.7295,7.5 L10.5,7.5 C10.638,7.5 10.75,7.612 10.75,7.75 C10.75,7.888 10.638,8 10.5,8 Z" id="Shape"></path>
+                        <path d="M11.6875,1.5845 C11.64,1.531 11.572,1.5 11.5,1.5 L2.5,1.5 C2.362,1.5 2.25,1.612 2.25,1.75 C2.25,1.888 2.362,2 2.5,2 L2.547,2 L3.205,5.509 C3.089,5.531 3,5.628 3,5.75 C3,5.888 3.112,6 3.25,6 L10.117,6 C10.746,6 11.2795,5.5295 11.3575,4.905 L11.748,1.781 C11.757,1.71 11.735,1.638 11.6875,1.5845 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

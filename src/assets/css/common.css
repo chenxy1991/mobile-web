@@ -1,0 +1,131 @@
+/*重置*/
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 10px !important;
+  color: #000;
+  background-color: #f3f3f3;
+  font-family: '微软雅黑', Helvetica, STHeiTi, Arial, sans-serif;
+}
+
+@media only screen and (min-width: 414px) {
+  html {
+    font-size: 12px !important;
+  }
+}
+
+@media only screen and (min-width: 400px) {
+  html {
+    font-size: 10px !important;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/*清除列表默认样式*/
+i, em {
+  font-style: normal;
+}
+
+/*清除斜体默认样式*/
+a {
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:active {
+  outline: 0;
+}
+
+.clearfix:before, .clearfix:after {
+  content: "";
+  display: inline-table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
+.clear {
+  clear: both;
+}
+
+.space10 {
+  background-color: #f3f3f3;
+  height: 10px;
+  width: 100%;
+}
+
+.fl {
+  float: left
+}
+
+.fr {
+  float: right
+}
+
+.tl {
+  text-align: left !important;
+}
+
+.tr {
+  text-align: right !important;
+}
+
+img {
+  display: inline-block;
+  border: 0 none;
+  vertical-align: middle;
+}
+
+/*特殊颜色*/
+.color-blue {
+  color: #23ade5 !important;
+}
+
+.color-o {
+  color: #ff8500 !important;
+}
+
+.color-red {
+  color: #ce3c39 !important;
+}
+
+.color-green {
+  color: #008000 !important;
+}
+
+.color-w {
+  color: #fff !important;
+}
+
+.color-4e {
+  color: #4e4e4e !important;
+}
+
+.color-8a {
+  color: #8a8a8a !important;
+}
+
+.color-1c {
+  color: #1c1c1c !important;
+}
+
+.bg-white {
+  background: #ffffff !important;
+}
+

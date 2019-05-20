@@ -1,0 +1,117 @@
+.mine-tab-container {
+  min-height: 100%;
+  padding-bottom: 23px;
+  .top-img {
+    width: 100%;
+    height: 16rem;
+    //height: 2.4rem;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 1rem;
+    .wrap {
+      width: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+      background-color: #fff;
+      box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      transform: translateY(-0.4rem);
+      .user-info {
+        display: flex;
+        flex-direction: row;
+        .avatar {
+          width: 11rem;
+          height: 11rem;
+          overflow: hidden;
+          border-radius: 8px;
+          margin-right: 1.8rem;
+          img {
+            width: 11rem;
+            height: 11rem;
+          }
+        }
+        .others {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          .role-city {
+            height: 2.4rem;
+            line-height: 2.4rem;
+            transform: translateY(-0.5rem);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            .role {
+              color: #8a8a8f;
+            }
+            .city {
+              color: #8a8a8f;
+            }
+          }
+          .about {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            div {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+            .f18 {
+              color: #3fc6ff;
+            }
+            .f11 {
+              color: #9b9b9b;
+            }
+            .point {
+              .f18 {
+                color: #f5a523;
+              }
+            }
+          }
+        }
+      }
+      .items {
+        padding: 0rem 1rem 4.4rem;
+        .item {
+          width: 100%;
+          height: 4.3rem;
+          cursor: pointer;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          .icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .group {
+            padding: 0 0.5rem;
+            span {
+              font-size: 1.5rem;
+              color: #8f8f8f;
+            }
+          }
+          .arrow {
+            flex: 1;
+            text-align: right;
+            .el-icon-coral-enter {
+              font-size: 1.2rem;
+              color: #c1c4d6;
+            }
+          }
+        }
+      }
+    }
+  }
+}

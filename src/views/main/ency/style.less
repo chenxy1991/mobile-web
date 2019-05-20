@@ -1,0 +1,154 @@
+.ency-tab-container {
+    min-height: 100%;
+    padding-bottom: 53px;
+    background: #fff;
+    position: relative;
+    .vux-search-box {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+    .weui-search-bar__label {
+        line-height: 26px;
+    }
+    .nav {
+        position: fixed;
+        width: 100%;
+        z-index: 100;
+        top: 44px;
+        height: 0;
+        .vux-tab {
+            height: 38px;
+        }
+        .tab-container {
+            .text {
+                color: #9b9b9b;
+            }
+            .tab-item-container {
+                line-height: 38px;
+            }
+            .vux-tab-selected {
+                .text {
+                    color: #28b1ea;
+                }
+            }
+        }
+    }
+    .mT40 {
+        margin-top: 40px;
+    }
+    .ency-list {
+        padding-bottom: 10px;
+        .types {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            .type {
+                width: 0.55rem;
+                height: 0.2rem;
+                line-height: 0.2rem;
+                margin: 0.05rem 0.09rem 0;
+                background-color: #fff;
+                color: #28b1ea;
+                text-align: center;
+                border: 0.01rem solid #39B7F9;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                border-radius: 6px;
+            }
+            .type-active {
+                background-color: #28b1ea;
+                color: #fff;
+            }
+        }
+        .block {
+            width: 100%;
+            .block-content {
+                width: 100%;
+                padding: 0.1rem 0.1rem 0 0.1rem;
+                box-sizing: border-box;
+                .content-main {
+                    background: #fff;
+                    box-shadow: 0 2px 6px 0 rgba(0,0,0,0.10);
+                    border-radius: 4px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                }
+                .ency-content-main {
+                    height: 0.88rem;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    .pic {
+                        margin: 0.1rem;
+                        img {
+                            width: 0.88rem;
+                            height: 0.64rem;
+                            border-radius: 5px;
+                        }
+                    }
+                    .info {
+                        flex: 1;
+                        height: 100%;
+                        box-sizing: border-box;
+                        padding: 0.1rem 0.1rem 0.1rem 0;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-around;
+                        .name-price {
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+                            .ency-price {
+                                .price-title {
+                                    color: #cbcbcb;
+                                }
+                                .price-text {
+                                    color: #f5a623;
+                                }
+                            }
+                        }
+                        .tags {
+                            display: flex;
+                            flex-direction: row;
+                            flex-wrap: wrap;
+                            .tag {
+                                margin-right: 2px;
+                                span {
+                                    color: #9b9b9b;
+                                }
+                            }
+                        }
+                        .others {
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+                            .actions {
+                                display: flex;
+                                flex-direction: row;
+                                .action {
+                                    margin-left: 0.05rem;
+                                    display: flex;
+                                    align-items: center;
+                                    .focused {
+                                        color: #f5a623;
+                                    }
+                                    img {
+                                        vertical-align: middle;
+                                    }
+                                    span {
+                                        color: #9b9b9b;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

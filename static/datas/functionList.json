@@ -1,0 +1,32 @@
+ {
+   "isSuccess": true,
+   "errorCode": "",
+   "errorMessage": "",
+   "rows":3,
+   "returnList": [
+  {
+      "title": "待办",
+      "imgName": "home_gonggao",
+      "badgeValue": 3
+    }, {
+      "title": "待阅",
+      "imgName": "home_gonggao"
+    }, {
+      "title": "维护作业",
+      "imgName": "home_gonggao"
+    }, {
+      "title": "流程查询",
+      "imgName": "home_gonggao"
+    }, {
+      "title": "公告",
+      "imgName": "home_gonggao"
+    }, {
+      "title": "功能",
+      "imgName": "home_gonggao"
+    }, {
+      "title": "自定义",
+      "imgName": "home_gonggao"
+    }
+
+ ]
+}
